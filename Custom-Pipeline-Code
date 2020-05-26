@@ -1,0 +1,51 @@
+import sys
+import json
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+from pyspark.sql.types import StructType, StringType, IntegerType, DateType, FloatType, StructField, ArrayType
+from pyspark.sql.functions import from_json, col
+from pyspark.sql import SQLContext
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import split, explode
+
+schema = StructType([
+    StructField("ISIN", StringType()),
+    StructField("Mnemonic", StringType()),
+    StructField("SecurityDesc", StringType()),
+    StructField("SecurityType", StringType()),
+    StructField("Currency", StringType()),
+    StructField("SecurityID", IntegerType()),
+    StructField("Date", DateType()),
+    StructField("Time", StringType()),
+    StructField("StartPrice", FloatType()),
+    StructField("MaxPrice", FloatType()),
+    StructField("MinPrice", FloatType()),
+    StructField("EndPrice", FloatType()),
+    StructField("TradedVolume", FloatType()),
+    StructField("NumberOfTrades", IntegerType())
+
+])
+
+spark = SparkSession \
+     .builder \
+     .appName("Kafka To Parquet") \
+     .enableHiveSupport() \
+     .getOrCreate()
+
+
+df = spark \
+  .readStream \
+  .format("kafka") \
+  .option("kafka.bootstrap.servers", "<kafkaserver>") \
+  .option("subscribe", "trading") \
+  .option("startingOffsets", "earliest") \
+  .load()
+
+interval=df.select(from_json(col("value").cast("string"), schema).alias("csv")).select("csv.*")
+
+interval.writeStream  \
+  .format("parquet") \
+  .option("checkpointLocation", "<checkpointdir>") \
+  .start("<targetdatadir>") \
+  .awaitTermination()
+
