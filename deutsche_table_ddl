@@ -1,16 +1,16 @@
-CREATE EXTERNAL TABLE deutsche_<yourname> (
+CREATE EXTERNAL TABLE deutsche_<your-name> (
 ISIN string,
 Mnemonic string,
 SecurityType string,
 Currency string,
 SecurityID int,
-`Date` date,
+`Date` string,
 Time string,
-StartPrice float,
-MaxPrice float,
-MinPrice float,
-EndPrice float,
-TradedVolume float,
+StartPrice double,
+MaxPrice double,
+MinPrice double,
+EndPrice double,
+TradedVolume double,
 NumberOfTrades int)
 STORED AS PARQUET
-LOCATION "<s3 datadir path>"
+LOCATION "<your S3 data diretory path>"
