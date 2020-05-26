@@ -1,0 +1,16 @@
+CREATE EXTERNAL TABLE deutsche_<yourname> (
+ISIN string,
+Mnemonic string,
+SecurityType string,
+Currency string,
+SecurityID int,
+`Date` date,
+Time string,
+StartPrice float,
+MaxPrice float,
+MinPrice float,
+EndPrice float,
+TradedVolume float,
+NumberOfTrades int)
+STORED AS PARQUET
+LOCATION "<s3 datadir path>"
